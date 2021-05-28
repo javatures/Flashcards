@@ -1,0 +1,6 @@
+[submodule "Flashcards-frontend"]
+	path = Flashcards-frontend
+	url = https://github.com/javatures/Flashcards-frontend
+[submodule "Flashcards-backend"]
+	path = Flashcards-backend
+	url = https://github.com/javatures/Flashcards-backend

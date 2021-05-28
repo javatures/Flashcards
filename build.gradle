@@ -1,0 +1,70 @@
+plugins {
+	id 'org.springframework.boot' version '2.4.5'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+	id "com.github.node-gradle.node" version "3.1.0"
+}
+
+group = 'com.javatures'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+sourceSets {
+    main {
+        java {
+            srcDirs("Flashcards-backend/src/main/java")
+        }
+    }
+    test {
+        java {
+            srcDirs("Flashcards-backend/src/test/java")
+        }
+    }
+    main {
+        resources {
+            srcDirs("Flashcards-backend/src/main/resources")
+        }
+    }
+}
+
+node {
+    nodeModulesDir = file('Flashcards-frontend')
+    version = '14.16.0'
+    npmWorkDir = file('Flashcards-frontend')
+}
+
+springBoot {
+    mainClassName = 'com.javatures.Flashcards.FlashcardsApplication'
+    
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'org.postgresql:postgresql'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+}
+
+test {
+	useJUnitPlatform()
+}
+
+task buildReactApp(type: NodeTask, dependsOn: 'npmInstall') {
+    script = project.file('Flashcards-frontend/node_modules/webpack/bin/webpack.js')
+    args = [
+        '--mode', 'development',
+        '--entry', './src/index.tsx',
+        '-o', '../Flashcards-backend/src/main/resources/static/dist'
+    ]
+}
+
+processResources.dependsOn 'buildReactApp'
+clean.delete << file('Flashcards-frontend/node_modules')
+clean.delete << file('Flashcards-backend/src/main/resources/static/dist')
